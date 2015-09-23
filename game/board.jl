@@ -47,35 +47,31 @@ type Board
         Board(nrobots::Int) = Board(24,60,nrobots)
 end
 
-function scrap_robots!(robot_field::Array{Int,2},scrap_field::Array{Int,2})
-        height = size(robot_field,1)
-        width = size(robot_field,2)
-        for y = 1:height
-                for x = 1:width
-                        if robot_field[y,x] > 1
-                                robot_field[y,x] = 0
-                                scrap_field[y,x] = 1
-                        end
+function move_robots!(old_robot_field::Array{Int,2}, new_robot_field::Array{Int,2})
+        height = size(old_robot_field,1)
+        width = size(old_robot_field,2)
+        for y = 1:height, x = 1:width
+                if old_robot_field[y,x] == 1
+                        new_robot_field[towards(player.y,y) , towards(player.x,x) ] += 1
                 end
         end
 end
 
-test1 = [1 1 ; 2 3]
-test2 = [0 0 ; 0 0]
-scrap_robots!(test1,test2)
-@test test1 == [1 1 ; 0 0]
-@test test2 == [0 0 ; 1 1]
-
-function move_robots!(b::Board)
-        old_slice = slice(b.matrix_representations[b.active,:,:,2])
-        new_slice = zeros(old_slice)
-        for y = 1:b.height
-                for x = 1:b.width
-                        if old_slice[y,x] == 1
-                                new_slice[towards(player.y,y) , towards(player.x,x) ] += 1
-                        end
+function scrap_robots!(robot_field::Array{Int,2},scrap_field::Array{Int,2})
+        height = size(robot_field,1)
+        width = size(robot_field,2)
+        for y = 1:height, x = 1:width
+                if robot_field[y,x] > 1
+                        robot_field[y,x] = 0
+                        scrap_field[y,x] = 1
                 end
         end
+end
+
+function move_and_scrap_robots!(b::Board)
+        old_slice = slice(b.matrix_representations[b.active,:,:,2])
+        new_slice = zeros(old_slice)
+        move_robots!(old_slice,new_slice)
         scrap_robots!(new_slice,b.matrix_representations[inactive,:,:,3])
         b.matrix_representations[inactive,:,:,2] = new_slice
 end

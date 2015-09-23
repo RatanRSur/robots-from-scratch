@@ -5,11 +5,6 @@ function set_indices_to!(mutee::Array{Int,2},indices::Array{Int,2},set_val)
         return mutee
 end
 
-a = [1 1 ; 2 2]
-@test set_indices_to!(a, [1 1;2 2],3) == [3 1; 2 3]
-a = [1 1 ; 2 2]
-@test set_indices_to!(a, [1 1],3) == [3 1; 2 2]
-
 function towards(origin, destination)
         if origin > destination
                 return origin - 1
@@ -19,7 +14,3 @@ function towards(origin, destination)
         end
         return origin
 end
-
-@test towards(5,5) == 5
-@test towards(5,4) == 4
-@test towards(8,2) == 7
