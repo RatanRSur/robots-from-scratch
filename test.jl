@@ -19,3 +19,8 @@ set_indices_to!(a, [1 1],3)
 
 b = Board()
 draw(b)
+move_player!(b, "n")
+robots_chase_player!(b.player,b.matrix_representations[b.active,:,:,2],b.matrix_representations[b.inactive,:,:,2])
+move_and_scrap_robots!(b)
+switch_active_board!(b)
+draw(b)

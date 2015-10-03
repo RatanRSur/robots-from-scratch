@@ -11,10 +11,10 @@ type Player
 end
 
 function move!(player::Player, direction::String)
-        contains(direction, "n") && (player.y += 1)
-        contains(direction, "s") && (player.y -= 1)
-        contains(direction, "e") && (player.x -= 1)
-        contains(direction, "w") && (player.x += 1)
+        contains(direction, "n") && (player.y -= 1)
+        contains(direction, "s") && (player.y += 1)
+        contains(direction, "e") && (player.x += 1)
+        contains(direction, "w") && (player.x -= 1)
 end
 
 function teleport!(player::Player, h, w)
@@ -45,11 +45,7 @@ type Board
 
         # Constructors
         Board(h=24,w=60,nrobots=10) = begin
-                this = new(h,w,nrobots)
-                this.matrix_representations = zeros(Int,2,h,w,3)
-                this.active = 1
-                this.inactive = 2
-
+                this = new(h,w,nrobots, zeros(Int,2,h,w,3), 1, 2)
                 #random initialization of player and robots
                 rand_coords = [sample(1:h ,nrobots+1, replace = false) sample(1:w, nrobots+1, replace = false)]
                 this.player = Player(rand_coords[1,1], rand_coords[1,2])
@@ -62,20 +58,30 @@ type Board
         Board(nrobots::Int) = Board(24,60,nrobots)
 end
 
-function move_robots!(old_robot_field::Array{Int,2}, new_robot_field::Array{Int,2})
+function robots_chase_player!(player::Player,old_robot_field::AbstractArray{Int,2}, new_robot_field::AbstractArray{Int,2})
         height, width = size(old_robot_field)
         for y = 1:height, x = 1:width
                 if old_robot_field[y,x] == 1
-                        new_robot_field[towards(player.y,y) , towards(player.x,x) ] += 1
+                        new_robot_field[towards(y,player.y) , towards(x,player.x)] += 1
                 end
         end
 end
 
-function scrap_robots!(robot_field::Array{Int,2},scrap_field::Array{Int,2})
+function robots_chase_player!(player::Player,old_robot_field::AbstractArray{Int,3}, new_robot_field::AbstractArray{Int,3})
+        trash, height, width = size(old_robot_field)
+        for y = 1:height, x = 1:width
+                if old_robot_field[1,y,x] == 1
+                        new_robot_field[1,towards(y,player.y) , towards(x,player.x)] += 1
+                end
+        end
+end
+
+function scrap_robots!(robot_field::AbstractArray{Int,2},scrap_field::AbstractArray{Int,2})
         height, width = size(robot_field)
         for y = 1:height, x = 1:width
                 if scrap_field[y,x] == 1
                         robot_field[y,x] = 0
+                        continue
                 end
                 if robot_field[y,x] > 1
                         robot_field[y,x] = 0
@@ -85,26 +91,26 @@ function scrap_robots!(robot_field::Array{Int,2},scrap_field::Array{Int,2})
 end
 
 function move_and_scrap_robots!(b::Board)
-        old_robot_field = slice(b.matrix_representations[b.active,:,:,2])
+        old_robot_field = slice(b.matrix_representations,b.active,:,:,2)
         new_robot_field = zeros(old_robot_field)
-        move_robots!(old_robot_field,new_robot_field)
-        scrap_robots!(new_robot_field,b.matrix_representations[inactive,:,:,3])
+        robots_chase_player!(b.player, old_robot_field, new_robot_field)
+        b.matrix_representations[b.inactive,:,:,2] = new_robot_field
+        scrap_robots!(new_robot_field,slice(b.matrix_representations,b.inactive,:,:,3))
         b.num_robots = sum(new_robot_field)
-        b.matrix_representations[inactive,:,:,2] = new_robot_field
 end
 
-function switch_active_board!(board::Board)
-        board.active, board.inactive = board.inactive, board.active
+function switch_active_board!(b::Board)
+        b.active, b.inactive = b.inactive, b.active
 end
 
-function update_player_pos!(board::Board)
-        if board.matrix_representations[inactive,board.player.y,board.player.x,1] != 1
-                board.matrix_representations[inactive,:,:,1] = 0
-                board.matrix_representations[inactive,board.player.y,board.player.x,1] = 1
+function update_player_pos!(b::Board)
+        if b.matrix_representations[b.inactive,b.player.y,b.player.x,1] != 1
+                b.matrix_representations[b.inactive,:,:,1] = 0
+                b.matrix_representations[b.inactive,b.player.y,b.player.x,1] = 1
         end
 end
 
 function move_player!(board::Board, direction::String)
         move!(board.player, direction)
-        update_player_pos(board)
+        update_player_pos!(board)
 end

@@ -6,6 +6,6 @@ end
 
 function towards(origin, destination)
         origin > destination && return origin - 1
-        origin > destination && return origin + 1
+        origin < destination && return origin + 1
         return origin
 end
