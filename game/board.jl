@@ -67,15 +67,6 @@ function robots_chase_player!(player::Player,old_robot_field::AbstractArray{Int,
         end
 end
 
-function robots_chase_player!(player::Player,old_robot_field::AbstractArray{Int,3}, new_robot_field::AbstractArray{Int,3})
-        trash, height, width = size(old_robot_field)
-        for y = 1:height, x = 1:width
-                if old_robot_field[1,y,x] == 1
-                        new_robot_field[1,towards(y,player.y) , towards(x,player.x)] += 1
-                end
-        end
-end
-
 function scrap_robots!(robot_field::AbstractArray{Int,2},scrap_field::AbstractArray{Int,2})
         height, width = size(robot_field)
         for y = 1:height, x = 1:width
