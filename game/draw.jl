@@ -1,28 +1,29 @@
-function print_cell(board::Board, y, x)
-        board.matrix_representations[board.active,y,x,1] == 1 && (print('@'); return)
-        board.matrix_representations[board.active,y,x,2] == 1 && (print('+'); return)
-        board.matrix_representations[board.active,y,x,3] == 1 && (print('*'); return)
+function print_cell(b::Board, y, x)
+        b.matrix_representations[b.active,y,x,1] == 1 && (print('@'); return)
+        b.matrix_representations[b.active,y,x,2] == 1 && (print('+'); return)
+        b.matrix_representations[b.active,y,x,3] == 1 && (print('*'); return)
         print(' ')
 end
 
-function draw(board::Board)
+function draw(b::Board)
         print("+")
-        for i=1:board.width
+        for i=1:b.width
                 print("-")
         end
         print("+")
         print('\n')
-        for y = 1:board.height
+        for y = 1:b.height
                 print('|')
-                for x = 1:board.width
-                        print_cell(board,y,x)
+                for x = 1:b.width
+                        print_cell(b,y,x)
                 end
                 print('|')
                 print('\n')
         end
         print("+")
-        for i=1:board.width
+        for i=1:b.width
                 print("-")
         end
-        print("+\n")
+        print('+')
+        print('\n')
 end

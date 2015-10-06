@@ -101,7 +101,7 @@ function update_player_pos!(b::Board)
         end
 end
 
-function move_player!(board::Board, direction::String)
-        move!(board.player, direction)
-        update_player_pos!(board)
+function move_player!(b::Board, direction::String)
+        move!(b.player, direction)
+        update_player_pos!(b)
 end
