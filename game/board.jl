@@ -74,9 +74,7 @@ function scrap_robots!(robot_field::AbstractArray{Int,2},scrap_field::AbstractAr
     for y = 1:height, x = 1:width
         if scrap_field[y,x] == 1
             robot_field[y,x] = 0
-            continue
-        end
-        if robot_field[y,x] > 1
+        elseif robot_field[y,x] > 1
             robot_field[y,x] = 0
             scrap_field[y,x] = 1
         end
