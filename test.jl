@@ -17,7 +17,7 @@ set_indices_to!(a, [1 1],3)
 @test towards(5,4) == 4
 @test towards(8,2) == 7
 
-b = Board()
+b = Board(10,10,2)
 draw(b)
 move_sprite!(b, "n")
 move_and_scrap_robots!(b)

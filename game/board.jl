@@ -10,7 +10,7 @@ type Sprite
     Sprite(ypos,xpos) = new(ypos,xpos,true)
 end
 
-function move!(s::Sprite, direction::String)
+function move!(s::Sprite, direction::ASCIIString)
     contains(direction, "n") && (s.y -= 1)
     contains(direction, "s") && (s.y += 1)
     contains(direction, "e") && (s.x += 1)
@@ -25,7 +25,7 @@ end
 type Board
     height::Int
     width::Int
-    num_robots::Int
+    init_num_robots::Int
 
     #=
     The matrix representations is a pair of 3D matrices (1 4D matrix)
@@ -87,7 +87,6 @@ function move_and_scrap_robots!(b::Board)
     robots_chase_sprite!(b.sprite, old_robot_field, new_robot_field)
     b.matrix_representations[b.inactive,:,:,2] = new_robot_field
     scrap_robots!(new_robot_field,slice(b.matrix_representations,b.inactive,:,:,3))
-    b.num_robots = sum(new_robot_field)
 end
 
 function switch_active_board!(b::Board)
@@ -97,7 +96,7 @@ end
 unset_sprite_pos!(b::Board) = b.matrix_representations[b.inactive,b.sprite.y,b.sprite.x,1] = 0
 set_sprite_pos!(b::Board) = b.matrix_representations[b.inactive,b.sprite.y,b.sprite.x,1] = 1
 
-function move_sprite!(b::Board, direction::String)
+function move_sprite!(b::Board, direction::ASCIIString)
     unset_sprite_pos!(b)
     move!(b.sprite, direction)
     set_sprite_pos!(b)
