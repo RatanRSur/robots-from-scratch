@@ -26,6 +26,7 @@ type Board
     height::Int
     width::Int
     init_num_robots::Int
+    live_robots::Int
 
     #=
     The matrix representations is a pair of 3D matrices (1 4D matrix)
@@ -47,7 +48,7 @@ type Board
 
     # Constructors
     Board(h=24,w=60,nrobots=10) = begin
-        this = new(h,w,nrobots, zeros(Int,2,h,w,3), 1, 2)
+        this = new(h,w,nrobots, nrobots, zeros(Int,2,h,w,3), 1, 2)
         #random initialization of sprite and robots
         rand_coords = [sample(1:h ,nrobots+1, replace = false) sample(1:w, nrobots+1, replace = false)]
         this.sprite = Sprite(rand_coords[1,1], rand_coords[1,2])
@@ -59,6 +60,8 @@ type Board
 
     Board(nrobots::Int) = Board(24,60,nrobots)
 end
+
+has_robots(b::Board) = b.live_robots != 0
 
 function robots_chase_sprite!(s::Sprite,old_robot_field::AbstractArray{Int,2}, new_robot_field::AbstractArray{Int,2})
     height, width = size(old_robot_field)
@@ -81,12 +84,13 @@ function scrap_robots!(robot_field::AbstractArray{Int,2},scrap_field::AbstractAr
     end
 end
 
-function move_and_scrap_robots!(b::Board)
+function process_robot_turn!(b::Board)
     old_robot_field = slice(b.matrix_representations,b.active,:,:,2)
     new_robot_field = zeros(old_robot_field)
     robots_chase_sprite!(b.sprite, old_robot_field, new_robot_field)
     b.matrix_representations[b.inactive,:,:,2] = new_robot_field
     scrap_robots!(new_robot_field,slice(b.matrix_representations,b.inactive,:,:,3))
+    b.live_robots = sum(b.matrix_representations[b.inactive,:,:,2])
 end
 
 function switch_active_board!(b::Board)
