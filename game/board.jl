@@ -22,6 +22,8 @@ function teleport!(s::Sprite, h, w)
     s.x = rand(1:w)
 end
 
+wait(s::Sprite) = nothing
+
 type Board
     height::Int
     width::Int
