@@ -63,7 +63,7 @@ type Board
         return this
     end
 
-    Board(nrobots::Int) = Board(24,60,nrobots)
+    Board(nrobots::Integer) = Board(24,60,nrobots)
 end
 
 has_robots(b::Board) = b.live_robots != 0
