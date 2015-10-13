@@ -22,6 +22,8 @@ function teleport!(s::Sprite, h, w)
     s.x = rand(1:w)
 end
 
+skip(s::Sprite) = nothing
+
 type Board
     height::Int
     width::Int
@@ -108,6 +110,14 @@ function move_sprite!(b::Board, direction::ASCIIString)
     move!(b.sprite, direction)
     set_sprite_pos!(b)
 end
+
+function teleport_sprite!(b::Board)
+    unset_sprite_pos!(b)
+    teleport!(b.sprite,b.height,b.width)
+    set_sprite_pos!(b)
+end
+
+skip_sprite!(b::Board) = skip(b.sprite) # equivalent to nothing for now
 
 is_sprite_on_scrap(b::Board) = b.matrix_representations[b.inactive,b.sprite.y,b.sprite.x,3] == 1
 
