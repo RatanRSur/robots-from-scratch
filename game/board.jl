@@ -22,18 +22,18 @@ function teleport!(s::Sprite, h, w)
     s.x = rand(1:w)
 end
 
-wait(s::Sprite) = nothing
-
 type Board
     height::Int
     width::Int
     init_num_robots::Int
     live_robots::Int
+    wait_mode::Bool
+    robots_when_waiting::Int
 
     #=
     The matrix representations is a pair of 3D matrices (1 4D matrix)
     in which each "slice" shows
-    the existence of a sprite, robot, or scrap pile at each coordinate in
+    the existence of a sprite, robot, or scrap pile at each coordinate
     e.g. matrix_representations[1,2,5,3] will be 1 iff there is a scrap pile at
     coordinate 2,5 in the first 3D matrix.
     Likewise, matrix_representations[2,2,5,1] and [2,2,5,2] denote the existence
@@ -50,7 +50,8 @@ type Board
 
     # Constructors
     Board(h=24,w=60,nrobots=10) = begin
-        this = new(h,w,nrobots, nrobots, zeros(Int,2,h,w,3), 1, 2)
+        this = new( h , w , nrobots , nrobots , false , 0 , zeros(Int,2,h,w,3) , 1 , 2 )
+
         #random initialization of sprite and robots
         rand_coords = [sample(1:h ,nrobots+1, replace = false) sample(1:w, nrobots+1, replace = false)]
         this.sprite = Sprite(rand_coords[1,1], rand_coords[1,2])
@@ -112,4 +113,9 @@ is_sprite_on_scrap(b::Board) = b.matrix_representations[b.inactive,b.sprite.y,b.
 
 function scrap_sprite!(b::Board)
     is_sprite_on_scrap(b) && (b.sprite.is_alive = false)
+end
+
+function enter_wait_mode!(b::Board)
+    b.wait_mode = true
+    b.robots_when_waiting = b.live_robots
 end
