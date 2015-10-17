@@ -25,3 +25,10 @@ b = Board(10,10,2)
 # draw(b)
 
 @test has_robots(b)
+
+scr = TermWin.initscr()
+print_frame(scr)
+# TermWin.mvwprintw(scr, 0 , 0 , "%s","hello")
+TermWin.refresh()
+TermWin.wgetch(scr)
+TermWin.endwin()
