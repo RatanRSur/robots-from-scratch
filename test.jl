@@ -26,11 +26,23 @@ b = Board(10,10,2)
 
 @test has_robots(b)
 
+h = Human()
+
 scr = TermWin.initscr()
+TermWin.noecho()
 TermWin.curs_set(0)
+
 print_frame(scr)
-# TermWin.mvwprintw(scr, 0 , 0 , "%s","hello")
 print_field(b,scr)
 TermWin.refresh()
+
+m = get_valid_move(h,b,scr)
+com = key_to_command(m)
+execute_command(com,b)
+process_robot_turn!(b)
+switch_active_board!(b)
+print_field(b,scr)
+TermWin.refresh()
+
 TermWin.wgetch(scr)
 TermWin.endwin()

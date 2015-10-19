@@ -129,3 +129,20 @@ function enter_wait_mode!(b::Board)
     b.wait_mode = true
     b.robots_when_waiting = b.live_robots
 end
+
+function is_inbounds(b::Board, y,x)
+    y < 1 || y > b.height && return false
+    x < 1 || x > b.width && return false
+    return true
+end
+
+function robot_in_dist_one(b::Board, y::Int,x::Int)
+    for i = -1:1, j = -1:1
+        if is_inbounds(b,y+i,x+j)
+            if b.matrix_representations[b.inactive,y+i,x+j,2] == 1
+                return true
+            end
+        end
+    end
+    return false
+end
