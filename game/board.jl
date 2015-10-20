@@ -40,7 +40,8 @@ type Board
     coordinate 2,5 in the first 3D matrix.
     Likewise, matrix_representations[2,2,5,1] and [2,2,5,2] denote the existence
     of a sprite or robot at [2,5] in the second 3D matrix.
-    All functions mutate the inactive matrix.
+    All but one function mutate the inactive matrix.
+    (unset_sprite_pos zeros the player in the active matrix)
     After mutations are finished, switch_active_board is called.
     =#
 
@@ -63,7 +64,7 @@ type Board
         return this
     end
 
-    Board(nrobots::Integer) = Board(24,60,nrobots)
+    Board(nrobots::Int) = Board(24,60,nrobots)
 end
 
 has_robots(b::Board) = b.live_robots != 0
@@ -89,12 +90,17 @@ function scrap_robots!(robot_field::AbstractArray{Int,2},scrap_field::AbstractAr
     end
 end
 
+function copy_scrap_field!(b::Board)
+    b.matrix_representations[b.active,:,:,3] = b.matrix_representations[b.inactive,:,:,3]
+end
+
 function process_robot_turn!(b::Board)
     old_robot_field = slice(b.matrix_representations,b.active,:,:,2)
     new_robot_field = zeros(old_robot_field)
     robots_chase_sprite!(b.sprite, old_robot_field, new_robot_field)
     b.matrix_representations[b.inactive,:,:,2] = new_robot_field
     scrap_robots!(new_robot_field,slice(b.matrix_representations,b.inactive,:,:,3))
+    copy_scrap_field!(b)
     b.live_robots = sum(b.matrix_representations[b.inactive,:,:,2])
 end
 
@@ -102,7 +108,7 @@ function switch_active_board!(b::Board)
     b.active, b.inactive = b.inactive, b.active
 end
 
-unset_sprite_pos!(b::Board) = b.matrix_representations[b.inactive,b.sprite.y,b.sprite.x,1] = 0
+unset_sprite_pos!(b::Board) = b.matrix_representations[b.active,b.sprite.y,b.sprite.x,1] = 0
 set_sprite_pos!(b::Board) = b.matrix_representations[b.inactive,b.sprite.y,b.sprite.x,1] = 1
 
 function move_sprite!(b::Board, direction::ASCIIString)
@@ -117,7 +123,11 @@ function teleport_sprite!(b::Board)
     set_sprite_pos!(b)
 end
 
-skip_sprite!(b::Board) = skip(b.sprite) # equivalent to nothing for now
+function skip_sprite(b::Board) # equivalent to nothing for now
+    unset_sprite_pos!(b)
+    skip(b.sprite)
+    set_sprite_pos!(b)
+end
 
 is_sprite_on_scrap(b::Board) = b.matrix_representations[b.inactive,b.sprite.y,b.sprite.x,3] == 1
 
@@ -130,16 +140,16 @@ function enter_wait_mode!(b::Board)
     b.robots_when_waiting = b.live_robots
 end
 
-function is_inbounds(b::Board, y,x)
-    y < 1 || y > b.height && return false
-    x < 1 || x > b.width && return false
+function is_inbounds(b::Board, y ,x)
+    (y < 1 || y > b.height) && return false
+    (x < 1 || x > b.width) && return false
     return true
 end
 
 function robot_in_dist_one(b::Board, y::Int,x::Int)
     for i = -1:1, j = -1:1
         if is_inbounds(b,y+i,x+j)
-            if b.matrix_representations[b.inactive,y+i,x+j,2] == 1
+            if b.matrix_representations[b.active,y+i,x+j,2] == 1
                 return true
             end
         end

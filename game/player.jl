@@ -7,27 +7,29 @@ function is_valid(m::Char, b::Board)
     y = b.sprite.y
     x = b.sprite.x
     if m == 'h'
-        return !robot_in_dist_one(b,y,x-1)
+        is_inbounds(b,y,x-1) ? !robot_in_dist_one(b,y,x-1) : false
     elseif m == 'j'
-        return !robot_in_dist_one(b,y+1,x)
+        is_inbounds(b,y+1,x) ? !robot_in_dist_one(b,y+1,x) : false
     elseif m == 'k'
-        return !robot_in_dist_one(b,y-1,x)
+        is_inbounds(b,y-1,x) ? !robot_in_dist_one(b,y-1,x) : false
     elseif m == 'l'
-        return !robot_in_dist_one(b,y,x+1)
+        is_inbounds(b,y,x+1) ? !robot_in_dist_one(b,y,x+1) : false
     elseif m == 'y'
-        return !robot_in_dist_one(b,y-1,x-1)
+        is_inbounds(b,y-1,x-1) ? !robot_in_dist_one(b,y-1,x-1) : false
     elseif m == 'u'
-        return !robot_in_dist_one(b,y-1,x+1)
+        is_inbounds(b,y-1,x+1) ? !robot_in_dist_one(b,y-1,x+1) : false
     elseif m == 'b'
-        return !robot_in_dist_one(b,y+1,x-1)
+        is_inbounds(b,y+1,x-1) ? !robot_in_dist_one(b,y+1,x-1) : false
     elseif m == 'n'
-        return !robot_in_dist_one(b,y+1,x+1)
+        is_inbounds(b,y+1,x+1) ? !robot_in_dist_one(b,y+1,x+1) : false
     elseif m == ' '
-        return !robot_in_dist_one(b,y,x)
+        !robot_in_dist_one(b,y,x)
     elseif m == 't'
-        return true
+        true
     elseif m == 'w'
-        return true
+        true
+    else
+        false
     end
 end
 
@@ -56,17 +58,19 @@ function key_to_command(k::Char)
         "sw"
     elseif k == 'n'
         "se"
+    elseif k == 'w'
+        "e"
     else
         string(k)
     end
 end
 
-function execute_command(com::ASCIIString,b::Board)
+
+function execute_command(com::AbstractString,b::Board)
     if com == "t"
         teleport_sprite!(b)
     elseif com == " "
         skip_sprite(b)
-    elseif com == "w"
     else
         move_sprite!(b,com)
     end

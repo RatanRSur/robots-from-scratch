@@ -17,7 +17,7 @@ set_indices_to!(a, [1 1],3)
 @test towards(5,4) == 4
 @test towards(8,2) == 7
 
-b = Board(10,10,2)
+b = Board()
 # draw(b)
 # move_sprite!(b, "n")
 # process_robot_turn!(b)
@@ -36,13 +36,17 @@ print_frame(scr)
 print_field(b,scr)
 TermWin.refresh()
 
-m = get_valid_move(h,b,scr)
-com = key_to_command(m)
-execute_command(com,b)
-process_robot_turn!(b)
-switch_active_board!(b)
-print_field(b,scr)
-TermWin.refresh()
+while true
+    m = get_valid_move(h,b,scr)
+    com = key_to_command(m)
+    execute_command(com,b)
+    process_robot_turn!(b)
+    switch_active_board!(b)
+    TermWin.erase()
+    print_frame(scr)
+    print_field(b,scr)
+    TermWin.refresh()
+end
 
 TermWin.wgetch(scr)
 TermWin.endwin()
