@@ -40,8 +40,6 @@ type Board
     coordinate 2,5 in the first 3D matrix.
     Likewise, matrix_representations[2,2,5,1] and [2,2,5,2] denote the existence
     of a sprite or robot at [2,5] in the second 3D matrix.
-    All but one function mutate the inactive matrix.
-    (unset_sprite_pos zeros the player in the active matrix)
     After mutations are finished, switch_active_board is called.
     =#
 
@@ -73,6 +71,7 @@ function robots_chase_sprite!(s::Sprite,old_robot_field::AbstractArray{Int,2}, n
     height, width = size(old_robot_field)
     for y = 1:height, x = 1:width
         if old_robot_field[y,x] == 1
+            old_robot_field[y,x] = 0
             new_robot_field[towards(y,s.y) , towards(x,s.x)] += 1
         end
     end
@@ -96,10 +95,10 @@ end
 
 function process_robot_turn!(b::Board)
     old_robot_field = slice(b.matrix_representations,b.active,:,:,2)
-    new_robot_field = zeros(old_robot_field)
+    new_robot_field = slice(b.matrix_representations,b.inactive,:,:,2)
     robots_chase_sprite!(b.sprite, old_robot_field, new_robot_field)
-    b.matrix_representations[b.inactive,:,:,2] = new_robot_field
-    scrap_robots!(slice(b.matrix_representations,b.inactive,:,:,2),slice(b.matrix_representations,b.inactive,:,:,3))
+    scrap_field = slice(b.matrix_representations,b.inactive,:,:,3)
+    scrap_robots!(new_robot_field,scrap_field)
     copy_scrap_field!(b)
     b.live_robots = sum(b.matrix_representations[b.inactive,:,:,2])
 end
