@@ -96,10 +96,14 @@ end
 function process_robot_turn!(b::Board)
     old_robot_field = slice(b.matrix_representations,b.active,:,:,2)
     new_robot_field = slice(b.matrix_representations,b.inactive,:,:,2)
+
     robots_chase_sprite!(b.sprite, old_robot_field, new_robot_field)
+
     scrap_field = slice(b.matrix_representations,b.inactive,:,:,3)
+
     scrap_robots!(new_robot_field,scrap_field)
     copy_scrap_field!(b)
+
     b.live_robots = sum(b.matrix_representations[b.inactive,:,:,2])
 end
 
@@ -154,4 +158,8 @@ function robot_in_dist_one(b::Board, y::Int,x::Int)
         end
     end
     return false
+end
+
+function get_score(b::Board)
+    has_robots(b) ?  10 * (init_num_robots - live_robots) : 10*init_num_robots + robots_when_waiting - live_robots
 end
