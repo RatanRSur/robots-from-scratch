@@ -99,7 +99,7 @@ function process_robot_turn!(b::Board)
     new_robot_field = zeros(old_robot_field)
     robots_chase_sprite!(b.sprite, old_robot_field, new_robot_field)
     b.matrix_representations[b.inactive,:,:,2] = new_robot_field
-    scrap_robots!(new_robot_field,slice(b.matrix_representations,b.inactive,:,:,3))
+    scrap_robots!(slice(b.matrix_representations,b.inactive,:,:,2),slice(b.matrix_representations,b.inactive,:,:,3))
     copy_scrap_field!(b)
     b.live_robots = sum(b.matrix_representations[b.inactive,:,:,2])
 end

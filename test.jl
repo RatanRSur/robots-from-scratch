@@ -18,11 +18,6 @@ set_indices_to!(a, [1 1],3)
 @test towards(8,2) == 7
 
 b = Board()
-# draw(b)
-# move_sprite!(b, "n")
-# process_robot_turn!(b)
-# switch_active_board!(b)
-# draw(b)
 
 @test has_robots(b)
 
