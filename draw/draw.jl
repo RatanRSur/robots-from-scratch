@@ -6,14 +6,14 @@ function print_cell(b::Board, w::Ptr{Void}, y, x)
     b.matrix_representations[b.active,y,x,3] == 1 && (easy_print(w, y+1, x+1, "*"); return)
 end
 
-function print_corners(w::Ptr{Void})
+function print_corners(b::Board,w::Ptr{Void})
     easy_print(w,1,1, "+")
     easy_print(w,1,b.width+2, "+")
     easy_print(w,b.height+2,1, "+")
     easy_print(w,b.height+2,b.width+2, "+")
 end
 
-function print_border(w::Ptr{Void})
+function print_border(b::Board,w::Ptr{Void})
     for i=1:b.width
         easy_print(w,1,i+1,"-")
         easy_print(w,b.height+2,i+1,"-")
@@ -24,9 +24,9 @@ function print_border(w::Ptr{Void})
     end
 end
 
-function print_frame(w::Ptr{Void})
-    print_corners(w)
-    print_border(w)
+function print_frame(b::Board,w::Ptr{Void})
+    print_corners(b,w)
+    print_border(b,w)
 end
 
 function print_field(b::Board, w::Ptr{Void})

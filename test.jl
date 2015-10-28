@@ -17,31 +17,19 @@ set_indices_to!(a, [1 1],3)
 @test towards(5,4) == 4
 @test towards(8,2) == 7
 
-b = Board()
+g = Game(Human())
 
-@test has_robots(b)
+@test has_robots(g.board)
 
-h = Human()
-
-scr = TermWin.initscr()
+win = TermWin.initscr()
 TermWin.noecho()
 TermWin.curs_set(0)
 
-print_frame(scr)
-print_field(b,scr)
-TermWin.refresh()
+# print_frame(g.board,win)
+# print_field(g.board,win)
+# TermWin.refresh()
 
-while true
-    m = get_valid_move(h,b,scr)
-    com = key_to_command(m)
-    execute_command(com,b)
-    process_robot_turn!(b)
-    switch_active_board!(b)
-    TermWin.erase()
-    print_frame(scr)
-    print_field(b,scr)
-    TermWin.refresh()
-end
+play(g,win);
 
-TermWin.wgetch(scr)
+TermWin.wgetch(win)
 TermWin.endwin()
