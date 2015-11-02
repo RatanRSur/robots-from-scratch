@@ -34,3 +34,10 @@ function print_field(b::Board, w::Ptr{Void})
         print_cell(b,w,y,x)
     end
 end
+
+function print_and_refresh(b::Board,w::Ptr{Void})
+    TermWin.erase()
+    print_frame(b,w)
+    print_field(b,w)
+    TermWin.refresh()
+end

@@ -22,21 +22,17 @@ score(g::Game) = previous_levels_score + current_level_score
 is_over(g::Game) = !g.board.sprite.is_alive
 end_turn(g::Game) = g.players_turn = !g.players_turn
 
-function play(g::Game, w::Ptr{Void})
-    if isa(g.player,Human)
-        print_frame(g.board,w)
-        print_field(g.board,w)
-        TermWin.refresh()
-        while !is_over(g)
+function play(g::Game, p::Human ,w::Ptr{Void})
+    print_and_refresh(g.board,w)
+    while !is_over(g)
+        if !g.board.wait_mode
             m = get_valid_move(g.player,g.board, w)
             com = key_to_command(m)
             execute_command(com,g.board)
-            process_robot_turn!(g.board)
-            switch_active_board!(g.board)
-            TermWin.erase()
-            print_frame(g.board,w)
-            print_field(g.board,w)
-            TermWin.refresh()
         end
+        process_robot_turn!(g.board)
+        scrap_sprite!(g.board)
+        switch_active_board!(g.board)
+        print_and_refresh(g.board,w)
     end
 end

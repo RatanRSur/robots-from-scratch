@@ -25,11 +25,7 @@ win = TermWin.initscr()
 TermWin.noecho()
 TermWin.curs_set(0)
 
-# print_frame(g.board,win)
-# print_field(g.board,win)
-# TermWin.refresh()
-
-play(g,win);
+play(g,g.player,win);
 
 TermWin.wgetch(win)
 TermWin.endwin()

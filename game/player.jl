@@ -59,7 +59,7 @@ function key_to_command(k::Char)
     elseif k == 'n'
         "se"
     elseif k == 'w'
-        "e"
+        "wait"
     else
         string(k)
     end
@@ -71,6 +71,8 @@ function execute_command(com::AbstractString,b::Board)
         teleport_sprite!(b)
     elseif com == " "
         skip_sprite(b)
+    elseif com == "wait"
+        enter_wait_mode!(b)
     else
         move_sprite!(b,com)
     end
