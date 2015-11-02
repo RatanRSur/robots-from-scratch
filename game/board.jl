@@ -54,11 +54,12 @@ type Board
         this = new( h , w , nrobots , nrobots , false , 0 , zeros(Int,2,h,w,3) , 1 , 2 )
 
         #random initialization of sprite and robots
-        rand_coords = [sample(1:h ,nrobots+1, replace = false) sample(1:w, nrobots+1, replace = false)]
-        this.sprite = Sprite(rand_coords[1,1], rand_coords[1,2])
-        robot_positions = rand_coords[2:end,:]
+        rand_coords = sample(1:h*w ,nrobots+1, replace = false)
+        this.sprite = Sprite(div(rand_coords[1],w+1),div(rand_coords[1],h))
         this.matrix_representations[this.active,this.sprite.y,this.sprite.x,1] = 1
-        set_indices_to!(slice(this.matrix_representations,this.active,:,:,2), robot_positions , 1)
+        for i = 2:length(rand_coords)
+            slice(this.matrix_representations,this.active,:,:,2)[rand_coords[i]] = 1
+        end
         return this
     end
 
@@ -161,5 +162,5 @@ function robot_in_dist_one(b::Board, y::Int,x::Int)
 end
 
 function get_score(b::Board)
-    has_robots(b) ?  10 * (init_num_robots - live_robots) : 10*init_num_robots + robots_when_waiting - live_robots
+    has_robots(b) ?  10 * (b.init_num_robots - b.live_robots) : 10*b.init_num_robots + b.robots_when_waiting - b.live_robots
 end
