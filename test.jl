@@ -1,4 +1,4 @@
-using Base.test
+using Base.Test
 include("Robots.jl")
 
 test1 = [1 1 ; 2 3]

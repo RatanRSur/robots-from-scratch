@@ -3,28 +3,40 @@ type Game
     player::Player
     level::Int
     previous_levels_score::Int
-    current_level_score::Int
     players_turn::Bool
 
-    Game(p::Player) = new(Board(),p, 1, 0,0, true)
+    Game(p::Player) = new(Board(),p, 1, 0, true)
 end
 
 
 function next_level!(g::Game)
-    g.previous_levels_score += current_level_score
-    g.current_level_score = 0
+    g.previous_levels_score += get_score(g.board)
     g.level += 1
     g.board = Board(g.board.height,g.board.width, g.level < 5 ? 10 * g.level : 40)
     g.players_turn = true
 end
 
-score(g::Game) = previous_levels_score + current_level_score
+score(g::Game) = g.previous_levels_score + get_score(g.board)
 is_over(g::Game) = !g.board.sprite.is_alive
 end_turn(g::Game) = g.players_turn = !g.players_turn
 
+function print_score(g::Game, w::Ptr{Void})
+    score_pos = (g.board.height + 3, 0)
+    easy_print(w,score_pos...,string(score(g)))
+end
+
+function print_and_refresh(g::Game,w::Ptr{Void})
+    TermWin.erase()
+    print_frame(g.board,w)
+    print_field(g.board,w)
+    print_score(g,w)
+    TermWin.refresh()
+end
+
+
 function play(g::Game, p::Human ,w::Ptr{Void})
-    print_and_refresh(g.board,w)
     while !is_over(g)
+        print_and_refresh(g,w)
         if !g.board.wait_mode
             m = get_valid_move(g.player,g.board, w)
             com = key_to_command(m)
@@ -33,6 +45,8 @@ function play(g::Game, p::Human ,w::Ptr{Void})
         process_robot_turn!(g.board)
         scrap_sprite!(g.board)
         switch_active_board!(g.board)
-        print_and_refresh(g.board,w)
+        if g.board.live_robots == 0
+            next_level!(g)
+        end
     end
 end
