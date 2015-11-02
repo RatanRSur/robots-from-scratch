@@ -1,3 +1,4 @@
+using Base.test
 include("Robots.jl")
 
 test1 = [1 1 ; 2 3]

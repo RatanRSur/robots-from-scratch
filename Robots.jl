@@ -1,5 +1,4 @@
 using StatsBase.sample
-using Base.Test
 using TermWin
 
 include("game/utils.jl")
