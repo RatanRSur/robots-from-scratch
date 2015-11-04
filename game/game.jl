@@ -21,7 +21,7 @@ is_over(g::Game) = !g.board.sprite.is_alive
 end_turn(g::Game) = g.players_turn = !g.players_turn
 
 function print_score(g::Game, w::Ptr{Void})
-    score_pos = (g.board.height + 3, 0)
+    score_pos = (g.board.height + 3, 1)
     easy_print(w,score_pos...,string(score(g)))
 end
 

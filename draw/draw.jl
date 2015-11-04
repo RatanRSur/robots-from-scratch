@@ -1,9 +1,9 @@
 easy_print(w::Ptr{Void}, y, x, str::ASCIIString) = TermWin.mvwprintw(w,y - 1,x - 1,"%s",str)
 
 function print_cell(b::Board, w::Ptr{Void}, y, x)
-    b.matrix_representations[b.active,y,x,1] == 1 && (easy_print(w, y+1, x+1, "@"); return)
-    b.matrix_representations[b.active,y,x,2] == 1 && (easy_print(w, y+1, x+1, "+"); return)
-    b.matrix_representations[b.active,y,x,3] == 1 && (easy_print(w, y+1, x+1, "*"); return)
+    b.matrix_rep[b.active,y,x,1] == 1 && (easy_print(w, y+1, x+1, "@"); return)
+    b.matrix_rep[b.active,y,x,2] == 1 && (easy_print(w, y+1, x+1, "+"); return)
+    b.matrix_rep[b.active,y,x,3] == 1 && (easy_print(w, y+1, x+1, "*"); return)
 end
 
 function print_corners(b::Board,w::Ptr{Void})
