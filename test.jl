@@ -28,5 +28,6 @@ TermWin.curs_set(0)
 
 play(g,g.player,win);
 
-TermWin.wgetch(win)
 TermWin.endwin()
+
+println("You made it to level ",g.level, " with a score of ",score(g),"!")

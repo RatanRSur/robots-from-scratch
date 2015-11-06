@@ -3,35 +3,6 @@ abstract Player
 type Human <: Player
 end
 
-function is_valid(m::Char, b::Board)
-    y = b.sprite.y
-    x = b.sprite.x
-    if m == 'h'
-        is_inbounds(b,y,x-1) ? !robot_in_dist_one(b,y,x-1) : false
-    elseif m == 'j'
-        is_inbounds(b,y+1,x) ? !robot_in_dist_one(b,y+1,x) : false
-    elseif m == 'k'
-        is_inbounds(b,y-1,x) ? !robot_in_dist_one(b,y-1,x) : false
-    elseif m == 'l'
-        is_inbounds(b,y,x+1) ? !robot_in_dist_one(b,y,x+1) : false
-    elseif m == 'y'
-        is_inbounds(b,y-1,x-1) ? !robot_in_dist_one(b,y-1,x-1) : false
-    elseif m == 'u'
-        is_inbounds(b,y-1,x+1) ? !robot_in_dist_one(b,y-1,x+1) : false
-    elseif m == 'b'
-        is_inbounds(b,y+1,x-1) ? !robot_in_dist_one(b,y+1,x-1) : false
-    elseif m == 'n'
-        is_inbounds(b,y+1,x+1) ? !robot_in_dist_one(b,y+1,x+1) : false
-    elseif m == ' '
-        !robot_in_dist_one(b,y,x)
-    elseif m == 't'
-        true
-    elseif m == 'w'
-        true
-    else
-        false
-    end
-end
 
 function get_valid_move(h::Human, b::Board, w::Ptr{Void})
     m = Char(TermWin.wgetch(w))

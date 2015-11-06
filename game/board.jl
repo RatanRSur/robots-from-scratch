@@ -55,7 +55,7 @@ type Board
 
         #random initialization of sprite and robots
         rand_coords = sample(1:h*w ,nrobots+1, replace = false)
-        this.sprite = Sprite(rand_coords[1] ÷ w+1, rand_coords[1] ÷ h)
+        this.sprite = Sprite((rand_coords[1]-1) ÷ w + 1, (rand_coords[1]-1) ÷ h + 1)
         this.matrix_rep[this.active,this.sprite.y,this.sprite.x,1] = 1
         for i = 2:length(rand_coords)
             slice(this.matrix_rep,this.active,:,:,2)[rand_coords[i]] = 1
@@ -132,10 +132,13 @@ function skip_sprite(b::Board) # equivalent to nothing for now
     set_sprite_pos!(b)
 end
 
-is_sprite_on_scrap(b::Board) = b.matrix_rep[b.inactive,b.sprite.y,b.sprite.x,3] == 1
+robot_on_square(b::Board,y,x) = b.matrix_rep[b.inactive,y,x,2] == 1
+scrap_on_square(b::Board,y,x) = b.matrix_rep[b.inactive,y,x,3] == 1
+is_sprite_on_robot(b::Board) = robot_on_square(b,b.sprite.y,b.sprite.x)
+is_sprite_on_scrap(b::Board) = scrap_on_square(b,b.sprite.y,b.sprite.x)
 
 function scrap_sprite!(b::Board)
-    is_sprite_on_scrap(b) && (b.sprite.is_alive = false)
+    (is_sprite_on_scrap(b) || is_sprite_on_robot(b)) && (b.sprite.is_alive = false)
 end
 
 function enter_wait_mode!(b::Board)
@@ -149,10 +152,52 @@ function is_inbounds(b::Board, y ,x)
     return true
 end
 
+
+function is_valid(m::Char, b::Board)
+    y = b.sprite.y
+    x = b.sprite.x
+    if m == 'h'
+        checky, checkx = y,x-1
+    elseif m == 'j'
+        checky, checkx = y+1,x
+    elseif m == 'k'
+        checky, checkx = y-1,x
+    elseif m == 'l'
+        checky, checkx = y,x+1
+    elseif m == 'y'
+        checky, checkx = y-1,x-1
+    elseif m == 'u'
+        checky, checkx = y-1,x+1
+    elseif m == 'b'
+        checky, checkx = y+1,x-1
+    elseif m == 'n'
+        checky, checkx = y+1,x+1
+    elseif m == ' '
+        return !robot_in_dist_one(b,y,x)
+    elseif m == 't'
+        return true
+    elseif m == 'w'
+        return true
+    else
+        return false
+    end
+
+    #=if is_inbounds(b,checky, checkx) && !robot_in_dist_one(b,checky, checkx) && !scrap_on_square(b,checky, checkx)=#
+    #=else=#
+        #=@show is_inbounds(b,checky, checkx)=#
+        #=@show !robot_in_dist_one(b,checky, checkx)=#
+        #=@show !scrap_on_square(b,checky, checkx)=#
+    #=end=#
+    return is_inbounds(b,checky, checkx) &&
+    !robot_in_dist_one(b,checky, checkx) &&
+    !scrap_on_square(b,checky, checkx)
+end
+
 function robot_in_dist_one(b::Board, y::Int,x::Int)
     for i = -1:1, j = -1:1
         if is_inbounds(b,y+i,x+j)
             if b.matrix_rep[b.active,y+i,x+j,2] == 1
+                @show y+i,x+j
                 return true
             end
         end
