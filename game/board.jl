@@ -96,13 +96,14 @@ end
 function process_robot_turn!(b::Board)
     old_robot_field = slice(b.matrix_rep,b.active,:,:,2)
     new_robot_field = slice(b.matrix_rep,b.inactive,:,:,2)
+    old_scrap_field = slice(b.matrix_rep,b.active,:,:,3)
+    new_scrap_field = slice(b.matrix_rep,b.inactive,:,:,3)
+
+    new_scrap_field[:] = old_scrap_field[:]
 
     robots_chase_sprite!(b.sprite, old_robot_field, new_robot_field)
 
-    scrap_field = slice(b.matrix_rep,b.inactive,:,:,3)
-
-    scrap_robots!(new_robot_field,scrap_field)
-    copy_scrap_field!(b)
+    scrap_robots!(new_robot_field,new_scrap_field)
 
     b.live_robots = sum(b.matrix_rep[b.inactive,:,:,2])
 end
@@ -152,7 +153,6 @@ function is_inbounds(b::Board, y ,x)
     return true
 end
 
-
 function is_valid(m::Char, b::Board)
     y = b.sprite.y
     x = b.sprite.x
@@ -197,7 +197,6 @@ function robot_in_dist_one(b::Board, y::Int,x::Int)
     for i = -1:1, j = -1:1
         if is_inbounds(b,y+i,x+j)
             if b.matrix_rep[b.active,y+i,x+j,2] == 1
-                @show y+i,x+j
                 return true
             end
         end
@@ -206,5 +205,9 @@ function robot_in_dist_one(b::Board, y::Int,x::Int)
 end
 
 function get_score(b::Board)
-    has_robots(b) ?  10 * (b.init_num_robots - b.live_robots) : 10*b.init_num_robots + b.robots_when_waiting - b.live_robots
+    retVal = 10 * (b.init_num_robots - b.live_robots)
+    if b.live_robots == 0 && b.sprite.is_alive && b.wait_mode
+        retVal += b.robots_when_waiting - b.live_robots
+    end
+    retVal
 end

@@ -39,7 +39,6 @@ function print_and_refresh(g::Game,w::Ptr{Void})
     TermWin.refresh()
 end
 
-
 function play(g::Game, p::Human ,w::Ptr{Void})
     while !is_over(g)
         if !g.board.wait_mode
@@ -48,8 +47,8 @@ function play(g::Game, p::Human ,w::Ptr{Void})
             com = key_to_command(m)
             execute_command(com,g.board)
         end
-        scrap_sprite!(g.board)
         process_robot_turn!(g.board)
+        scrap_sprite!(g.board)
         switch_active_board!(g.board)
         if g.board.live_robots == 0
             next_level!(g)
