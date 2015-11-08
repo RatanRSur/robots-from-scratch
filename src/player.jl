@@ -3,6 +3,8 @@ abstract Player
 type Human <: Player
 end
 
+#=type Network <: Player=#
+#=end=#
 
 function get_valid_move(h::Human, b::Board, w::Ptr{Void})
     m = Char(TermWin.wgetch(w))
